@@ -1,13 +1,15 @@
 package com.tfandkusu.camera
 
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.tfandkusu.camera.databinding.ActivityCameraBinding
 
 class CameraActivity : AppCompatActivity() {
@@ -17,6 +19,11 @@ class CameraActivity : AppCompatActivity() {
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
         enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            binding.take.translationX = -systemBars.right.toFloat()
+            insets
+        }
         startCamera()
     }
 

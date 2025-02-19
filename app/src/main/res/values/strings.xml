@@ -4,4 +4,5 @@
     <string name="camera_permission_denied">カメラの権限が必要です</string>
     <string name="error">エラー</string>
     <string name="camera_error_dialog_message">カメラの起動に失敗しました。</string>
+    <string name="take_photo">写真を撮影</string>
 </resources>
