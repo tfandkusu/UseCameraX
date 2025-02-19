@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">UseCameraX</string>
+    <string name="camera_permission_granted">カメラの権限が許可されました</string>
+    <string name="camera_permission_denied">カメラの権限が必要です</string>
 </resources>
