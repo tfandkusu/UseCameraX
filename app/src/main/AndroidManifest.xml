@@ -5,6 +5,7 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -26,6 +27,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:screenOrientation="landscape"
+            android:name=".CameraActivity"
+            android:exported="false"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 
 </manifest>

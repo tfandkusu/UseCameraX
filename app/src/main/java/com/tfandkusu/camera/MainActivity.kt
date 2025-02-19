@@ -1,6 +1,7 @@
 package com.tfandkusu.camera
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -11,14 +12,19 @@ import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
+    private val cameraLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        finish()
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // カメラの権限が許可された時の処理
-            Toast.makeText(this, getString(R.string.camera_permission_granted), Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, CameraActivity::class.java)
+            cameraLauncher.launch(intent)
         } else {
-            // カメラの権限が拒否された時の処理
             Toast.makeText(this, getString(R.string.camera_permission_denied), Toast.LENGTH_SHORT).show()
         }
     }
