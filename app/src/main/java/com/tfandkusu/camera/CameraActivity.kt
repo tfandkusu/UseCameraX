@@ -1,19 +1,26 @@
 package com.tfandkusu.camera
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.tfandkusu.camera.databinding.ActivityCameraBinding
+import java.io.File
 
 class CameraActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCameraBinding
+    private lateinit var imageCapture: ImageCapture
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
@@ -37,23 +44,58 @@ class CameraActivity : AppCompatActivity() {
                     it.surfaceProvider = binding.viewFinder.surfaceProvider
                 }
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-
+            imageCapture = ImageCapture.Builder()
+                .build()
             try {
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview
+                    this, cameraSelector, preview, imageCapture
                 )
+                binding.take.setOnClickListener {
+                    takePhoto()
+                }
             } catch (_: Exception) {
-                showCameraErrorDialog()
+                showCameraErrorDialog(R.string.camera_error_start_message)
             }
         }, ContextCompat.getMainExecutor(this))
     }
 
-    private fun showCameraErrorDialog() {
+    private fun takePhoto() {
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(
+                File(
+                    filesDir.path + "/captured.jpg",
+                )
+            )
+            .build()
+       imageCapture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(this),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    // Toast 表示
+                    Toast.makeText(
+                        this@CameraActivity,
+                        getString(R.string.camera_take_photo),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onError(e: ImageCaptureException) {
+                    Log.d("TryCamera", "onError: ${e.message}", e)
+                    showCameraErrorDialog(R.string.camera_error_take_message)
+                }
+            }
+        )
+    }
+
+    private fun showCameraErrorDialog(
+        @StringRes messageStringResId: Int
+    ) {
         AlertDialog.Builder(this)
             .setTitle(R.string.error)
-            .setMessage(R.string.camera_error_dialog_message)
-            .setPositiveButton(R.string.camera_error_dialog_message) { _, _ ->
+            .setMessage(messageStringResId)
+            .setPositiveButton(R.string.ok) { _, _ ->
                 finish()
             }
             .setCancelable(false)

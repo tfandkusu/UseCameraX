@@ -3,6 +3,9 @@
     <string name="camera_permission_granted">カメラの権限が許可されました</string>
     <string name="camera_permission_denied">カメラの権限が必要です</string>
     <string name="error">エラー</string>
-    <string name="camera_error_dialog_message">カメラの起動に失敗しました。</string>
-    <string name="take_photo">写真を撮影</string>
+    <string name="camera_error_start_message">カメラの起動に失敗しました。</string>
+    <string name="camera_error_take_message">撮影に失敗しました。</string>
+    <string name="camera_take_photo">写真を撮影</string>
+    <string name="camera_saved">撮影画像を保存しました。</string>
+    <string name="ok">OK</string>
 </resources>
