@@ -3,6 +3,7 @@ package com.tfandkusu.camera
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Surface
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -70,6 +71,7 @@ class CameraActivity : AppCompatActivity() {
                 }
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
             imageCapture = ImageCapture.Builder()
+                .setTargetRotation(Surface.ROTATION_90)
                 .build()
             try {
                 cameraProvider.unbindAll()
@@ -83,10 +85,12 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun takePhoto() {
+        val srcFilePath =  filesDir.path + "/" + FILE_NAME_CAPTURED
+        val rotatedFilePath = filesDir.path + "/" + FILE_NAME_ROTATED
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(
                 File(
-                    filesDir.path + "/captured.jpg",
+                    srcFilePath
                 )
             )
             .build()
@@ -96,7 +100,10 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    viewModel.onSavePhoto()
+                    viewModel.onSavePhoto(
+                        srcFilePath = srcFilePath,
+                        rotatedFilePath = rotatedFilePath
+                    )
                 }
 
                 override fun onError(e: ImageCaptureException) {
@@ -123,5 +130,10 @@ class CameraActivity : AppCompatActivity() {
     private fun callShowPhotoActivity() {
         val intent = Intent(this, ShowPhotoActivity::class.java)
         showPhotoResultLauncher.launch(intent)
+    }
+
+    companion object {
+        const val FILE_NAME_CAPTURED = "captured.jpg"
+        const val FILE_NAME_ROTATED = "rotated.jpg"
     }
 }
