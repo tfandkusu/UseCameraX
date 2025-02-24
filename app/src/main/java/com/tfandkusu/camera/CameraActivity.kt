@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.activity.viewModels
 import com.tfandkusu.camera.databinding.ActivityCameraBinding
 import java.io.File
 
@@ -24,10 +25,12 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCameraBinding
     private lateinit var imageCapture: ImageCapture
 
+    private val viewModel: CameraViewModel by viewModels()
+
     private val showPhotoResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        readyTakingPhoto()
+        viewModel.onShowPhotoResult()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +41,20 @@ class CameraActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.take.translationX = -systemBars.right.toFloat()
             insets
+        }
+        viewModel.uiModel.observe(this) { uiModel ->
+            binding.progress.isVisible = uiModel.progress
+            if(uiModel.takeEnabled) {
+                binding.take.isClickable = true
+                binding.take.setOnClickListener {
+                    takePhoto()
+                }
+            }else {
+                binding.take.isClickable = false
+            }
+            if (uiModel.showPhoto) {
+                callShowPhotoActivity()
+            }
         }
         startCamera()
     }
@@ -59,28 +76,10 @@ class CameraActivity : AppCompatActivity() {
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview, imageCapture
                 )
-                readyTakingPhoto()
             } catch (_: Exception) {
                 showCameraErrorDialog(R.string.camera_error_start_message)
             }
         }, ContextCompat.getMainExecutor(this))
-    }
-
-    /**
-     * 写真を撮影する UI 状態にする
-     */
-    private fun readyTakingPhoto() {
-        binding.take.setOnClickListener {
-            takePhoto()
-        }
-        binding.progress.isVisible = false
-    }
-
-    /**
-     * 撮影した写真を処理する
-     */
-    private fun processPhoto() {
-
     }
 
     private fun takePhoto() {
@@ -91,14 +90,13 @@ class CameraActivity : AppCompatActivity() {
                 )
             )
             .build()
-        binding.take.isClickable = false
-        binding.progress.isVisible = true
+        viewModel.onTakePhoto()
         imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    callShowPhotoActivity()
+                    viewModel.onSavePhoto()
                 }
 
                 override fun onError(e: ImageCaptureException) {
@@ -123,7 +121,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun callShowPhotoActivity() {
-        binding.progress.isVisible = false
         val intent = Intent(this, ShowPhotoActivity::class.java)
         showPhotoResultLauncher.launch(intent)
     }
