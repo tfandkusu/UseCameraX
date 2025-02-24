@@ -1,5 +1,6 @@
 package com.tfandkusu.camera
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -73,12 +74,7 @@ class CameraActivity : AppCompatActivity() {
             ContextCompat.getMainExecutor(this),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    // Toast 表示
-                    Toast.makeText(
-                        this@CameraActivity,
-                        getString(R.string.camera_take_photo),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    callShowPhotoActivity()
                 }
 
                 override fun onError(e: ImageCaptureException) {
@@ -100,5 +96,10 @@ class CameraActivity : AppCompatActivity() {
             }
             .setCancelable(false)
             .show()
+    }
+
+    private fun callShowPhotoActivity() {
+        val intent = Intent(this, ShowPhotoActivity::class.java)
+        startActivity(intent)
     }
 }
