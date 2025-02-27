@@ -7,5 +7,6 @@
     <string name="camera_error_take_message">撮影に失敗しました。</string>
     <string name="camera_take_photo">写真を撮影</string>
     <string name="camera_saved">撮影画像を保存しました。</string>
+    <string name="camera_guide">枠線にあわせて撮影をしてください</string>
     <string name="ok">OK</string>
 </resources>
