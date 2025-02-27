@@ -41,7 +41,11 @@ class CameraActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.take.translationX = -systemBars.right.toFloat()
+            binding.toolbar.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
             insets
+        }
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
         }
         viewModel.uiModel.observe(this) { uiModel ->
             binding.progress.isVisible = uiModel.progress
